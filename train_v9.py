@@ -23,7 +23,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 
-from model.model_final_v9 import MultiASDDataLoaderV9, MultiASDEncoderV9
+from model.model import MultiASDDataLoaderV9, MultiASDEncoderV9
 
 
 def variance_regularization_loss(predictions, indices, min_var=0.01):
@@ -431,7 +431,7 @@ if __name__ == "__main__":
     
     model, data, history = train_v9(
         FILE_PATH,
-        num_samples=200001,
+        num_samples=201,
         num_epochs=101,
         batch_size=256,
         lr=3e-4,
