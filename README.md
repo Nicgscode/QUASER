@@ -93,31 +93,11 @@ The classical noise (CN) is computed as:
 
 Classical noise (CN):
 
-\[
-\mathrm{CN} = \mathrm{Data}_{\text{NOSQZ}} - \mathrm{Model}_{\text{Quantum}}
-\]
+$CN = Data_{NOSQZ} - Model_{Quantum}$
 
-Quantum ASD:
+$ASD_{quantum} = Data_{SQZ} - CN$
 
-\[
-\mathrm{ASD}_{\text{quantum}} 
-= \mathrm{Data}_{\text{SQZ}} - \mathrm{CN}
-\]
-
-Ratio'ed Quantum ASD (RQASD):
-
-\[
-\mathrm{RQASD} 
-= 10 \,\log_{10} \left( 
-    \frac{
-        \mathrm{ASD}_{\text{quantum}}
-    }{
-        \mathrm{Model}_{\text{Quantum}}
-    }
-\right)
-\]
-
-
+$RQASD = 10 \log_{10}\left(\frac{ASD_{quantum}}{Model_{Quantum}}\right)$
 
 ### 2.2 Transformer Architecture
 
