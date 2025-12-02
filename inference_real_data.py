@@ -1,10 +1,10 @@
 """
-inference_real_data_v9.py - Test trained V9 model on real LIGO data
+inference_real_data.py - Test trained model on real LIGO data
 
 Outputs 15 learnable parameters (excludes unlearnable phase parameters).
 
 Usage:
-    python inference_real_data_v9.py --model best_model_v9.pt --data real_data.hdf5 --training_data Samples_TrainV9_noisy.hdf5
+    python inference_real_data.py --model best_model.pt --data Generate_Data/Real_Data_08_08_25.hdf5 --training_data Generate_Data/Samples_Train.hdf5
 
 Expected data format:
     - HDF5 file with 'Simulated_ASD/QASD' shape (10, 1024) or (N, 10, 1024)
@@ -259,11 +259,11 @@ def visualize_results(qasd, freq, results_dict, sample_idx=0, save_path=None):
 
 def main():
     parser = argparse.ArgumentParser(description='Run V9 inference on real LIGO data')
-    parser.add_argument('--model', type=str, required=False, default='best_model_v9_0.pt',
+    parser.add_argument('--model', type=str, required=False, default='best_model.pt',
                         help='Path to trained model .pt file')
-    parser.add_argument('--data', type=str, required=False, default=r'C:\Users\User\repos\Transformer\Sample_Generation\Structed_Data_08_08.hdf5',
+    parser.add_argument('--data', type=str, required=False, default=r'Generate_Data/Real_Data_08_08_25.hdf5',
                         help='Path to real data HDF5')
-    parser.add_argument('--training_data', type=str, required=False, default=r'C:\Users\User\repos\Transformer\Sample_Generation\Samples_TrainV9_noisy.hdf5', 
+    parser.add_argument('--training_data', type=str, required=False, default=r'Generate_Data/Samples_Train.hdf5', 
                         help='Path to training data HDF5 (for normalization stats)')
     parser.add_argument('--device', type=str, default='cuda', 
                         help='Device (cuda or cpu)')
@@ -305,4 +305,5 @@ def main():
     return results_dict
 
 if __name__ == '__main__':
+
     main()
