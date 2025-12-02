@@ -87,23 +87,36 @@ Modern LIGO uses **frequency-dependent squeezing (FDS)** to reduce quantum noise
 We infer the classical noise by generating a GWINC quantum model and subtracting it from our non-squeezing ASD. We then subtract the classical noise from our squeezed data to infer the squeezed quantum noise. Finally we divide by the model's quantum noise as a reference to obtain the ratio'd quantum asd (rqasd)
 ### Quantum Noise Reconstruction Equations
 
-The correlation noise (CN) is computed as:
+The classical noise (CN) is computed as:
+
+### Quantum Noise Reconstruction Equations
+
+Classical noise (CN):
 
 \[
-$$\mathrm{CN} = \mathrm{Data}_{\text{NOSQZ}} - \mathrm{Model}_{\text{Quantum}}$$
+\mathrm{CN} = \mathrm{Data}_{\text{NOSQZ}} - \mathrm{Model}_{\text{Quantum}}
 \]
 
-The quantum ASD component is:
+Quantum ASD:
 
 \[
-\mathrm{ASD}_{\text{quantum}} = \mathrm{Data}_{\text{SQZ}} - \mathrm{CN}
+\mathrm{ASD}_{\text{quantum}} 
+= \mathrm{Data}_{\text{SQZ}} - \mathrm{CN}
 \]
 
-The ratio'ed quantum ASD (RQASD) is:
+Ratio'ed Quantum ASD (RQASD):
 
 \[
-\mathrm{RQASD} = 10 \log_{10} \left( \frac{\mathrm{ASD}_{\text{quantum}}}{\mathrm{Model}_{\text{Quantum}}} \right)
+\mathrm{RQASD} 
+= 10 \,\log_{10} \left( 
+    \frac{
+        \mathrm{ASD}_{\text{quantum}}
+    }{
+        \mathrm{Model}_{\text{Quantum}}
+    }
+\right)
 \]
+
 
 
 ### 2.2 Transformer Architecture
