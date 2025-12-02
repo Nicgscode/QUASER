@@ -62,8 +62,9 @@ The speed and consistent output is another key innovation, with hand fitting two
 
 LIGO's sensitivity is fundamentally limited by quantum fluctuations of light:
 
+![LIGO's noise curve](Images/LIGO_Noise_Curve.png)
 - **Shot Noise**: Dominates at high frequencies (>100 Hz), arises from photon counting statistics
-- **Quantum Radiation Pressure Noise**: Dominates at low frequencies (<50 Hz), momentum transfer from photons (Photons hitting the mirrors are a noise source!)
+- **Quantum Radiation Pressure Noise**: Dominates at low frequencies (<60 Hz), momentum transfer from photons (Photons hitting the mirrors are a noise source!)
 
 The quantum noise power spectral density depends on multiple parameters including arm cavity power, squeezing injection, filter cavity detuning, and various optical losses and mode mismatches.
 
@@ -106,6 +107,7 @@ We employ a **Vision Transformer (ViT)-inspired** architecture adapted for 1D sp
    - Position embedding: Which of 10 ASDs
    - Type embedding: FDS (0-4) vs FIS (5-9)
    - Angle embedding: Which squeezing angle configuration
+   - Frequency embedding: Which frequency bin
 
 4. **Dual Output Heads**:
    - CLS token → Direct parameters (shared across configurations)
@@ -124,6 +126,10 @@ This allows the model to learn correlations between different frequency regions 
 #### The Problem
 
 Squeezing angles have **π-periodicity**: θ and θ+π produce identical ASDs. Standard regression treats 0 and π as maximally different, causing boundary confusion.
+Squeezing angles exhibit π-periodicity due to the sin²/cos² dependence in the quantum noise power spectrum (Eq. 4.63 in [Jia 2024]). Specifically, the squeezed quantum noise scales as e2rsin⁡2(ϕ−θ)+e−2rcos⁡2(ϕ−θ)e^{2r}\sin^2(\phi - \theta) + e^{-2r}\cos^2(\phi - \theta)
+e2rsin2(ϕ−θ)+e−2rcos2(ϕ−θ), where angles ϕ\phi
+ϕ and ϕ+π\phi + \pi
+ϕ+π produce identical measurements.
 
 #### The Solution: Sin/Cos Encoding
 
