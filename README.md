@@ -92,7 +92,6 @@ We employ a **Vision Transformer (ViT)-inspired** architecture adapted for 1D sp
 | Feed-Forward Dimension | 2048 |
 | Dropout | 0.22 |
 | Total Parameters | ~12.4M |
-|---------------------------|
 
 #### Key Design Choices
 
