@@ -350,7 +350,7 @@ of this software...
 | **Generation** | Physics-based quantum noise model |
 | **Frequency Range** | 10 - 8000 Hz |
 | **Frequency Bins** | 1024 (log-spaced) |
-| **Noise Model** | Gaussian + calibration uncertainty |
+| **Noise Model** | Gaussian + uncertainty spikes |
 
 #### Parameter Ranges
 
@@ -376,11 +376,11 @@ of this software...
 
 This work addresses a critical bottleneck in gravitational wave detector operations:
 
-1. **Operational Impact**: Enables real-time quantum noise characterization during LIGO commissioning, reducing parameter estimation from hours to milliseconds
+1. **Operational Impact**: Enables real-time quantum noise characterization during LIGO commissioning, reducing parameter estimation from days to milliseconds.
 
-2. **Scientific Impact**: Demonstrates which quantum noise parameters are fundamentally identifiable from power spectral measurements
+2. **Scientific Impact**: Demonstrates which quantum noise parameters are fundamentally identifiable from power spectral measurements.
 
-3. **Methodological Impact**: Shows that transformer architectures can effectively learn complex physics relationships spanning 17 orders of magnitude
+3. **Methodological Impact**: Shows that transformer architectures can effectively learn complex physics relationships.
 
 ### 6.2 Key Findings & Revelations
 
@@ -401,7 +401,7 @@ Mode mismatch magnitudes show weak correlations due to degeneracy with arm power
 
 #### Finding 3: Transformer Effectiveness
 
-Despite the 17-order-of-magnitude parameter range, the transformer learns meaningful correlations for 12/15 parameters—demonstrating that attention mechanisms can capture complex frequency-dependent physics.
+The transformer learns meaningful correlations for 12/15 parameters—demonstrating that attention mechanisms can capture complex frequency-dependent physics.
 
 ### 6.3 Next Steps
 
