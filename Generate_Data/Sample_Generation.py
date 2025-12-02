@@ -16,11 +16,6 @@ Parameters from real MCMC/hand-fitting workflow:
     - FC detuning: -27.7 Hz
     - Phase noise: 18 mrad
 
-Key changes from v7:
-    - Added back: inj_lss, sqz_omc_mm_phase, fc_mm_phase, readout_loss
-    - Phase parameters use sin/cos encoding for 2π periodicity
-    - Parameter ranges calibrated to realistic LIGO values
-
 Output Parameters (14 physical + 6 encoded = 20 total for model):
     Physical (directly predicted):
         0: fc_detune      - Filter cavity detuning [Hz]
