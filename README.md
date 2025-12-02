@@ -90,7 +90,7 @@ We infer the classical noise by generating a GWINC quantum model and subtracting
 The correlation noise (CN) is computed as:
 
 \[
-\mathrm{CN} = \mathrm{Data}_{\text{NOSQZ}} - \mathrm{Model}_{\text{Quantum}}
+$$\mathrm{CN} = \mathrm{Data}_{\text{NOSQZ}} - \mathrm{Model}_{\text{Quantum}}$$
 \]
 
 The quantum ASD component is:
