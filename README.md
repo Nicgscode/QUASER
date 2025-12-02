@@ -125,11 +125,11 @@ This allows the model to learn correlations between different frequency regions 
 
 #### The Problem
 
-Squeezing angles have **π-periodicity**: θ and θ+π produce identical ASDs. Standard regression treats 0 and π as maximally different, causing boundary confusion.
-Squeezing angles exhibit π-periodicity due to the sin²/cos² dependence in the quantum noise power spectrum (Eq. 4.63 in [Jia 2024]). Specifically, the squeezed quantum noise scales as e2rsin⁡2(ϕ−θ)+e−2rcos⁡2(ϕ−θ)e^{2r}\sin^2(\phi - \theta) + e^{-2r}\cos^2(\phi - \theta)
-e2rsin2(ϕ−θ)+e−2rcos2(ϕ−θ), where angles ϕ\phi
-ϕ and ϕ+π\phi + \pi
-ϕ+π produce identical measurements.
+Squeezing angles exhibit π-periodicity due to the sin²/cos² dependence in the quantum noise power spectrum (Eq. 4.63 in [Jia 2024]). Specifically, the squeezed quantum noise scales as:
+
+$$S_P(\Omega) \propto e^{2r}\sin^2(\phi - \theta) + e^{-2r}\cos^2(\phi - \theta)$$
+
+where angles $\phi$ and $\phi + \pi$ produce identical measurements.
 
 #### The Solution: Sin/Cos Encoding
 
@@ -176,9 +176,9 @@ def variance_regularization_loss(predictions, indices, min_var=0.02):
 | Weight Decay | 0.01 |
 | Scheduler | Cosine Annealing |
 | Batch Size | 256 |
-| Epochs | 100 |
-| Training Samples | 120,000 |
-| Validation Samples | 15,000 |
+| Epochs | 101 |
+| Training Samples | 160,000 |
+| Validation Samples | 20,000 |
 
 ---
 
@@ -205,7 +205,7 @@ pip install numpy scipy h5py matplotlib tqdm
 Generate synthetic training data using quantum noise physics model:
 
 ```python
-python Generate_ASDs.py
+python Generate_Data/Generate_ASDs.py
 ```
 
 Add realistic noise to simulations:
@@ -333,22 +333,22 @@ of this software...
 | **Task** | Multi-output Regression |
 | **Input** | 10 ASD curves × 1024 frequency bins |
 | **Output** | 15 physical parameters + 5 squeezing angles |
-| **Parameters** | ~4.2 million |
-| **Training Data** | 120,000 synthetic samples |
-| **Validation Data** | 15,000 synthetic samples |
+| **Parameters** | ~12.4 million |
+| **Training Data** | 160,000 synthetic samples |
+| **Validation Data** | 20,000 synthetic samples |
 | **Framework** | PyTorch 2.0+ |
-| **Hardware** | NVIDIA RTX 4060 / A100 |
-| **Training Time** | ~2 hours (100 epochs on A100) |
+| **Hardware** | NVIDIA GeForce RTX 4060  |
+| **Training Time** | ~2 hours (101 epochs on 4060) |
 
 ### 5.2 Data Card
 
 | Field | Description |
 |-------|-------------|
-| **Dataset Name** | Samples_TrainV9_noisy.hdf5 |
-| **Size** | ~3 GB (150,000 samples) |
+| **Dataset Name** | Samples_Train_noisy.hdf5 |
+| **Size** | ~3 GB (200,001 samples) |
 | **Format** | HDF5 |
 | **Generation** | Physics-based quantum noise model |
-| **Frequency Range** | 10 - 5000 Hz |
+| **Frequency Range** | 10 - 8000 Hz |
 | **Frequency Bins** | 1024 (log-spaced) |
 | **Noise Model** | Gaussian + calibration uncertainty |
 
@@ -358,8 +358,8 @@ of this software...
 |-----------|-----|-----|-------|
 | arm_power | 200 | 400 | kW |
 | fc_detune | -50 | 50 | Hz |
-| inj_sqz | 5 | 20 | dB |
-| inj_lss | 0.1 | 0.5 | fraction |
+| inj_sqz | 0 | 21 | dB |
+| inj_lss | 0.0 | 1 | fraction |
 | sec_detune | -0.03 | 0.03 | rad |
 | ifo_omc_mm | 0.01 | 0.20 | fraction |
 | sqz_omc_mm | 0.01 | 0.20 | fraction |
