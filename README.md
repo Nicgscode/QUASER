@@ -291,6 +291,14 @@ Example output (LIGO alog format):
 
 ### 4.1 Model Performance
 ![Model Performance](Images/model_ouput_clean.png)
+The model's predictions on the evaluation data set with no artificical noise added (20k samples)
+
+
+
+The model's predictions on the evaluation data set with artificical noise added (20k samples)
+
+#### Model's comparison to real data
+
 
 ### 4.2 Intended Uses
 
@@ -319,11 +327,8 @@ Example output (LIGO alog format):
 - Parameter ranges chosen based on expected LIGO operating conditions
 
 **Potential Misuse:**
-- Model should not be used as sole source of truth for detector parameters
 - Uncertainty quantification not provided (future work)
-
-**Fairness:**
-- N/A (scientific instrument, no human subjects)
+- Only two actual real data measurements to compare the model to. 
 
 ### 4.5 License
 
@@ -332,7 +337,7 @@ This project is released under the **MIT License**.
 ```
 MIT License
 
-Copyright (c) 2024 LIGO Laboratory / Caltech
+Copyright (c) 2025 LIGO Laboratory / Caltech
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software...
@@ -366,7 +371,7 @@ of this software...
 | **Size** | ~8 GB (200,001 samples) |
 | **Format** | HDF5 |
 | **Generation** | Physics-based quantum noise model |
-| **Frequency Range** | 10 - 8000 Hz |
+| **Frequency Range** | 10 - 6000 Hz |
 | **Frequency Bins** | 1024 (log-spaced) |
 | **Noise Model** | Gaussian + uncertainty spikes |
 
@@ -457,7 +462,7 @@ The transformer learns meaningful correlations for 12/15 parameters—demonstrat
 
 ### 7.2 Code Repositories
 
-- **This Repository**: [GitHub Link]
+- **This Repository**: [[GitHub Link]](https://github.com/Nicgscode/QUASER/edit/main/README.md)
 - **LIGO Algorithm Library (LAL)**: https://git.ligo.org/lscsoft/lalsuite
 - **GWpy**: https://gwpy.github.io/ (Gravitational wave data analysis)
 
