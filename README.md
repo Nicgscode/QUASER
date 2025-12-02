@@ -191,31 +191,18 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 pip install numpy scipy h5py matplotlib tqdm
 ```
 
-### 3.2 Project Structure
-
-```
-ligo-quantum-transformer/
-├── model_final_v9.py      # Model architecture & data loader
-├── train_v9.py            # Training script with variance regularization
-├── inference_real_data_v9.py  # Real data inference
-├── Generate_ASDsv6.py     # Synthetic data generation
-├── add_noise.py           # Realistic noise injection
-├── best_model_v9.pt       # Trained weights
-└── README.md
-```
-
 ### 3.3 Data Generation
 
 Generate synthetic training data using quantum noise physics model:
 
 ```python
-python Generate_ASDsv6.py --num_samples 150000 --output Samples_TrainV9.hdf5
+python Generate_ASDs.py
 ```
 
 Add realistic noise to simulations:
 
 ```python
-python add_noise.py --input Samples_TrainV9.hdf5 --output Samples_TrainV9_noisy.hdf5
+python add_noise.py --input Generate_Data/Samples_Train.hdf5 --output Generate_Data/Samples_Train_noisy.hdf5
 ```
 
 ### 3.4 Training
@@ -224,16 +211,18 @@ python add_noise.py --input Samples_TrainV9.hdf5 --output Samples_TrainV9_noisy.
 from train_v9 import train_v9
 
 model, data, history = train_v9(
-    'Samples_TrainV9_noisy.hdf5',
-    num_samples=150000,
-    num_epochs=100,
-    batch_size=256,
-    lr=3e-4,
+    FILE_PATH,
+    num_samples=200001,
+    num_epochs=101,
+    batch_size=512,
+    lr=2e-4,
     d_model=256,
     num_heads=16,
-    num_layers=7,
-    var_reg_weight=0.05,  # Variance regularization
-    var_reg_min=0.02
+    num_layers=8,
+    d_ff=2048,
+    dropout=0.22,
+    var_reg_weight=0.9,  # Variance regularization weight
+    var_reg_min=0.04      # Minimum target variance
 )
 ```
 
@@ -242,8 +231,8 @@ model, data, history = train_v9(
 ```bash
 python inference_real_data_v9.py \
     --model best_model_v9.pt \
-    --data real_ligo_data.hdf5 \
-    --training_data Samples_TrainV9_noisy.hdf5 \
+    --data Generate_Data/Real_Data_08_08_25.hdf5 \
+    --training_data Generate_Data/Samples_Train.hdf5 \
     --save_fig results.png
 ```
 
@@ -275,7 +264,7 @@ Example output (LIGO alog format):
 
 ```python
 import torch
-from model_final_v9 import MultiASDEncoderV9, MultiASDDataLoaderV9
+from model.model import MultiASDEncoderV9, MultiASDDataLoaderV9
 
 # Load model
 model = MultiASDEncoderV9(
@@ -293,38 +282,12 @@ with torch.no_grad():
 print(f"Direct parameters shape: {direct_params.shape}")  # (1, 10)
 print(f"Angle sin/cos shape: {angles_sincos.shape}")      # (1, 10)
 ```
-
 ---
 
 ## 4. Assessment & Evaluation
 
 ### 4.1 Model Performance
 
-#### Correlation Coefficients (Validation Set)
-
-| Parameter | Correlation (r) | Status |
-|-----------|-----------------|--------|
-| fc_detune | 0.928 | ✅ Excellent |
-| inj_sqz | 0.921 | ✅ Excellent |
-| lo_angle | 0.872 | ✅ Good |
-| sqz_angles (avg) | 0.826 | ✅ Good |
-| arm_power | 0.773 | ✅ Good |
-| sec_detune | 0.757 | ✅ Good |
-| phase_noise | 0.723 | ✅ Good |
-| inj_lss | 0.645 | ⚠️ Moderate |
-| ifo_omc_mm | 0.592 | ⚠️ Moderate |
-| sqz_omc_mm | 0.367 | ⚠️ Weak |
-| fc_mm | 0.355 | ⚠️ Weak |
-
-**12 of 15 parameters achieve r > 0.7**
-
-### 4.2 Computational Performance
-
-| Metric | MCMC | Transformer | Speedup |
-|--------|------|-------------|---------|
-| Inference Time | ~2 hours | ~12 ms | **600,000×** |
-| GPU Memory | N/A | ~500 MB | - |
-| Batch Processing | Sequential | 256 samples | - |
 
 ### 4.3 Intended Uses
 
