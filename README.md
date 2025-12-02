@@ -24,7 +24,7 @@ A deep learning approach to real-time quantum noise characterization for gravita
 
 ### The Challenge
 
-LIGO (Laser Interferometer Gravitational-Wave Observatory) detectors are limited by **quantum noise** at most frequencies. To optimize detector sensitivity, operators must characterize 15+ quantum noise parameters from measured Amplitude Spectral Density (ASD) curves. The current approach uses **Markov Chain Monte Carlo (MCMC)** methods, which require **hours of computation** per measurement—far too slow for real-time detector commissioning.
+LIGO (Laser Interferometer Gravitational-Wave Observatory) detectors are limited by **quantum noise** at most frequencies. To optimize detector sensitivity, operators must characterize 15+ quantum noise parameters from measured Amplitude Spectral Density (ASD) curves. The current approach uses **Hand Fitting** methods, which require **days of work** per measurement—far too slow for real-time detector commissioning.
 
 ### Our Solution
 
@@ -32,7 +32,7 @@ We developed a **transformer-based neural network** that predicts quantum noise 
 
 ### Key Innovation
 
-This work reveals a fundamental physics insight: **certain parameters are unlearnable from power spectral density measurements alone**. Specifically, mode mismatch phase parameters cannot be recovered because phase information is destroyed when computing PSD = |FFT(signal)|². This finding has implications for LIGO commissioning procedures.
+This work reveals a fundamental physics insight: **certain parameters are unlearnable from power spectral density measurements alone**. Specifically, mode mismatch phase parameters cannot be recovered because phase information is destroyed when computing PSD = |FFT(signal)|². This finding may have implications for LIGO commissioning procedures.
 
 ### Pipeline Overview
 
