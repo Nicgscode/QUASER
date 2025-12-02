@@ -126,7 +126,6 @@ We employ a **Vision Transformer (ViT)-inspired** architecture adapted for 1D sp
    - Position embedding: Which of 10 ASDs
    - Type embedding: FDS (0-4) vs FIS (5-9)
    - Angle embedding: Which squeezing angle configuration
-   - Frequency embedding: Which frequency bin
 
 4. **Dual Output Heads**:
    - CLS token → Direct parameters (shared across configurations)
@@ -219,7 +218,7 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 pip install numpy scipy h5py matplotlib tqdm
 ```
 
-### 3.3 Data Generation
+### 3.2 Data Generation
 
 Generate synthetic training data using quantum noise physics model:
 
@@ -233,7 +232,7 @@ Add realistic noise to simulations:
 python add_noise.py --input Generate_Data/Samples_Train.hdf5 --output Generate_Data/Samples_Train_noisy.hdf5
 ```
 
-### 3.4 Training
+### 3.3 Training
 
 ```python
 from train_v9 import train_v9
@@ -254,7 +253,7 @@ model, data, history = train_v9(
 )
 ```
 
-### 3.5 Inference on Real Data
+### 3.4 Inference on Real Data
 
 ```bash
 python inference_real_data_v9.py \
@@ -293,7 +292,7 @@ Example output (LIGO alog format):
 ### 4.1 Model Performance
 ![Model Performance](Images/model_ouput_clean.png)
 
-### 4.3 Intended Uses
+### 4.2 Intended Uses
 
 **Primary Use Cases:**
 - Real-time quantum noise monitoring during LIGO commissioning
@@ -305,7 +304,7 @@ Example output (LIGO alog format):
 - Phase parameter estimation (fundamentally unlearnable from PSD)
 - Operation on detectors with significantly different configurations
 
-### 4.4 Limitations & Known Issues
+### 4.3 Limitations & Known Issues
 
 1. **Mode Mismatch Degeneracy**: Parameters `sqz_omc_mm` and `fc_mm` show weak correlations due to degeneracy with arm power and losses
 
@@ -313,7 +312,7 @@ Example output (LIGO alog format):
 
 3. **Domain Shift**: Model trained on simulated data; real data performance depends on simulation fidelity
 
-### 4.5 Ethical Considerations & Bias
+### 4.4 Ethical Considerations & Bias
 
 **Data Bias:**
 - Training data generated from physics models may not capture all real-world effects
@@ -326,7 +325,7 @@ Example output (LIGO alog format):
 **Fairness:**
 - N/A (scientific instrument, no human subjects)
 
-### 4.6 License
+### 4.5 License
 
 This project is released under the **MIT License**.
 
