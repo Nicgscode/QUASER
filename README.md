@@ -89,15 +89,13 @@ We infer the classical noise by generating a GWINC quantum model and subtracting
 
 The classical noise (CN) is computed as:
 
-### Quantum Noise Reconstruction Equations
-
-Classical noise (CN):
-
 $CN = Data_{NOSQZ} - Model_{Quantum}$
 
 $ASD_{quantum} = Data_{SQZ} - CN$
 
 $RQASD = 10 \log_{10}\left(\frac{ASD_{quantum}}{Model_{Quantum}}\right)$
+
+![RQASDs](Images/rqasds.png)
 
 ### 2.2 Transformer Architecture
 
