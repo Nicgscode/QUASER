@@ -26,6 +26,8 @@ A deep learning approach to real-time quantum noise characterization for gravita
 
 LIGO (Laser Interferometer Gravitational-Wave Observatory) detectors are limited by **quantum noise** at most frequencies. To optimize detector sensitivity, operators must characterize 15+ quantum noise parameters from measured Amplitude Spectral Density (ASD) curves. The current approach uses **Hand Fitting** methods, which require **days of work** per measurement—far too slow for real-time detector commissioning.
 
+![Handfitting Example](Images/hand_fit_example.png)
+
 ### Our Solution
 
 We developed a **transformer-based neural network** that predicts quantum noise parameters directly from ASD measurements in **milliseconds**, enabling real-time detector optimization during commissioning activities.
