@@ -84,6 +84,12 @@ Modern LIGO uses **frequency-dependent squeezing (FDS)** to reduce quantum noise
      frequencies = np.geomspace(10, 6000, 1024)
  ```
 
+We infer the classical noise by generating a GWINC quantum model and subtracting it from our non-squeezing ASD. We then subtract the classical noise from our squeezed data to infer the squeezed quantum noise. Finally we divide by the model's quantum noise as a reference to obtain the ratio'd quantum asd (rqasd)
+``` python
+     CN = Data_NOSQZ - Model_Quantum
+     ASD_quantum = Data_SQZ - CN
+     RQASD = 10 * log10(ASD_quantum / Model_Quantum)
+```
 
 ### 2.2 Transformer Architecture
 
@@ -351,8 +357,8 @@ of this software...
 
 | Field | Description |
 |-------|-------------|
-| **Dataset Name** | Samples_Train_noisy.hdf5 |
-| **Size** | ~3 GB (200,001 samples) |
+| **Dataset Name** | Samples_Train.hdf5 |
+| **Size** | ~8 GB (200,001 samples) |
 | **Format** | HDF5 |
 | **Generation** | Physics-based quantum noise model |
 | **Frequency Range** | 10 - 8000 Hz |
@@ -383,7 +389,7 @@ of this software...
 
 This work addresses a critical bottleneck in gravitational wave detector operations:
 
-1. **Operational Impact**: Enables real-time quantum noise characterization during LIGO commissioning, reducing parameter estimation from days to milliseconds.
+1. **Operational Impact**: Enables real-time quantum noise characterization during LIGO commissioning, reducing parameter estimation time from days to milliseconds.
 
 2. **Scientific Impact**: Demonstrates which quantum noise parameters are fundamentally identifiable from power spectral measurements.
 
@@ -455,6 +461,8 @@ The transformer learns meaningful correlations for 12/15 parameters—demonstrat
 - LIGO Open Science Center: https://losc.ligo.org/
 - Gravitational Wave Open Data Workshop: https://gw-odw.thinkific.com/
 - PyTorch Documentation: https://pytorch.org/docs/
+- GWINC: https://git.ligo.org/gwinc/pygwinc
+- GWINC (Documentation): https://dcc.ligo.org/public/0159/G1900315/003/slides.pdf
 
 ---
 
