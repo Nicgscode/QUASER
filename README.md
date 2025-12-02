@@ -460,7 +460,7 @@ cd ligo-quantum-transformer
 pip install -r requirements.txt
 
 # 2. Download pre-trained model
-wget https://[model-url]/best_model_v9.pt
+wget https://github.com/Nicgscode/QUASER/releases/download/Pre/best_model_v9_nonoise.pt
 
 # 3. Run inference
 python inference_real_data_v9.py \
@@ -490,7 +490,7 @@ If you use this work, please cite:
 ## Contact
 
 - **Author**: Nicholas-Tyler Howard (Nic)
-- **Affiliation**: LIGO Laboratory / Caltech
+- **Affiliation**: LIGO Laboratory / Caltech / Fisk University
 - **Email**: nicholastyler.howard@ligo.org
 
 
