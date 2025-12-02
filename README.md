@@ -70,12 +70,20 @@ The quantum noise power spectral density depends on multiple parameters includin
 
 #### Frequency-Dependent Squeezing
 
-Modern LIGO uses **frequency-dependent squeezing (FDS)** to reduce quantum noise across high frequencies (Shot noise). A 300m filter cavity rotates the squeezing ellipse as a function of frequency, requiring precise characterization of:
+![SQZ_Example](Images/Squeezing_Example.png)
+Modern LIGO uses **frequency-dependent squeezing (FDS)** to reduce quantum noise across all frequencies. A 300m filter cavity rotates the squeezing ellipse as a function of frequency, requiring precise characterization of:
 
 - Squeezing level and injection losses
 - Filter cavity detuning and bandwidth  
 - Mode mismatch between optical cavities
 - Squeezing angle for each measurement configuration
+
+#### Data Prep
+ We generate the frequency bins as 
+ ``` python
+     frequencies = np.geomspace(10, 6000, 1024)
+ ```
+
 
 ### 2.2 Transformer Architecture
 
