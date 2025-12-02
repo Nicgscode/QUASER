@@ -3,19 +3,6 @@ Generate_ASDsv8.py - Production Quantum ASD Data Generation
 
 Updated to match LIGO commissioning parameters from alog (begum.kabagoz@LIGO.ORG, March 2025):
 https://alog.ligo-la.caltech.edu/aLOG/
-
-Parameters from real MCMC/hand-fitting workflow:
-    - Arm Power: 280 kW
-    - SEC detuning: -0.216°
-    - IFO readout efficiency: 0.925
-    - IFO-OMC mismatch: 2.8%, 3.31 rad
-    - Injected Squeezing: 17.27 dB
-    - Injection loss: 6.4 dB
-    - SQZ-OMC mismatch: 3.9%, 2.5 rad
-    - SQZ-FC mismatch: 1.8%, 3.95 rad
-    - FC detuning: -27.7 Hz
-    - Phase noise: 18 mrad
-
 Output Parameters (14 physical + 6 encoded = 20 total for model):
     Physical (directly predicted):
         0: fc_detune      - Filter cavity detuning [Hz]
@@ -240,7 +227,7 @@ def get_qmodel(params_raw, sqz_angles, freq, yaml='april9.yaml'):
 
 
 def save_data(qasd, params_encoded, sqz_angles, params_raw, freq, 
-              filename='Samples_TrainV9.hdf5'):
+              filename='Samples_Train.hdf5'):
     """Save generated data to HDF5."""
     with h5py.File(filename, 'w') as hf:
         g1 = hf.create_group('Simulated_ASD')
@@ -274,8 +261,8 @@ def save_data(qasd, params_encoded, sqz_angles, params_raw, freq,
 
 def main():
     # Configuration
-    num_samples = 200001
-    batch_size = 10000
+    num_samples = 201
+    batch_size = 10
     freq = np.geomspace(10, 8000, 1024)
     
     # IFO configurations
@@ -286,7 +273,7 @@ def main():
     
     # Randomly assign IFO configurations
     config_indices = np.random.randint(0, len(yaml_configs), num_samples)
-    np.save('yaml_orderV9.npy', yaml_configs[config_indices])
+    np.save('yaml_order.npy', yaml_configs[config_indices])
     
     # Initialize output
     qASD = np.zeros((num_samples, 10, 1024), dtype=np.float32)
