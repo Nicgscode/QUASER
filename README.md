@@ -169,6 +169,263 @@ def variance_regularization_loss(predictions, indices, min_var=0.02):
 
 ---
 
+### 2.6  Formal Algorithm Specifications
+---
+
+## Algorithm 1: Multi-ASD Transformer Forward Pass
+
+**Algorithm 1:** $\hat{\mathbf{y}} \leftarrow \text{MultiASDEncoder}(\mathbf{A} | \boldsymbol{\theta})$
+
+```
+/* Multi-ASD Transformer encoder forward pass for quantum parameter estimation */
+
+Input: A ∈ ℝ^(N_asd × N_freq), matrix of N_asd = 10 ASD spectra with N_freq = 1024 frequency bins
+Output: ŷ_direct ∈ ℝ^10, ŷ_angles ∈ ℝ^10, predicted direct parameters and sin/cos encoded angles
+
+Hyperparameters: d_model, N_heads, N_layers, d_ff, p_drop ∈ ℕ × ℕ × ℕ × ℕ × ℝ
+
+Parameters: θ includes all of the following parameters:
+    W_freq ∈ ℝ^(1 × N_freq), learnable frequency positional embedding,
+    W_proj ∈ ℝ^(N_freq × d_model), b_proj ∈ ℝ^d_model, ASD projection parameters,
+    W_pos ∈ ℝ^(N_asd × d_model), positional embeddings for each ASD,
+    W_type ∈ ℝ^(2 × d_model), type embeddings (FDS vs FIS),
+    W_angle ∈ ℝ^(5 × d_model), angle configuration embeddings,
+    e_cls ∈ ℝ^d_model, learnable CLS token,
+    For l ∈ [N_layers]:
+        𝒲_l^enc, multi-head self-attention parameters for layer l,
+        γ_l^1, β_l^1, γ_l^2, β_l^2 ∈ ℝ^d_model, two sets of layer-norm parameters,
+        W_mlp1^l ∈ ℝ^(d_model × d_ff), b_mlp1^l ∈ ℝ^d_ff, W_mlp2^l ∈ ℝ^(d_ff × d_model), b_mlp2^l ∈ ℝ^d_model,
+    W_direct ∈ ℝ^(d_model × d_ff), b_direct ∈ ℝ^d_ff, W_direct2 ∈ ℝ^(d_ff × 10), b_direct2 ∈ ℝ^10,
+    W_angle_head ∈ ℝ^(2·d_model × d_ff), b_angle_head ∈ ℝ^d_ff, W_angle2 ∈ ℝ^(d_ff × 2), b_angle2 ∈ ℝ^2.
+
+/* Add frequency positional embedding to input ASDs: */
+ 1  for i ∈ [N_asd]: A[i, :] ← A[i, :] + W_freq
+
+/* Project ASDs to model dimension: */
+ 2  for i ∈ [N_asd]: z_i ← A[i, :] · W_proj + b_proj
+ 3  Z ← [z_1, z_2, ..., z_{N_asd}]^T                          /* Z ∈ ℝ^(N_asd × d_model) */
+
+/* Add structured positional embeddings: */
+ 4  for i ∈ [N_asd]: Z[i, :] ← Z[i, :] + W_pos[i, :]
+ 5  for i ∈ [5]: Z[i, :] ← Z[i, :] + W_type[0, :]            /* FDS type embedding */
+ 6  for i ∈ [5, 10): Z[i, :] ← Z[i, :] + W_type[1, :]        /* FIS type embedding */
+ 7  for i ∈ [5]: Z[i, :] ← Z[i, :] + W_angle[i, :]           /* FDS angle embedding */
+ 8  for i ∈ [5, 10): Z[i, :] ← Z[i, :] + W_angle[i-5, :]     /* FIS angle embedding */
+
+/* Prepend CLS token: */
+ 9  Z ← [e_cls; Z]                                            /* Z ∈ ℝ^(11 × d_model) */
+
+/* Apply transformer encoder layers: */
+10  for l = 1, 2, ..., N_layers do
+11      Z ← Z + MHAttention(LayerNorm(Z | γ_l^1, β_l^1) | 𝒲_l^enc)
+12      Z ← Z + W_mlp2^l · GELU(W_mlp1^l · LayerNorm(Z | γ_l^2, β_l^2) + b_mlp1^l) + b_mlp2^l
+13  end
+14  Z ← LayerNorm(Z | γ_final, β_final)
+
+/* Extract CLS token and ASD features: */
+15  h_cls ← Z[0, :]                                           /* h_cls ∈ ℝ^d_model */
+16  H_asd ← Z[1:, :]                                          /* H_asd ∈ ℝ^(10 × d_model) */
+
+/* Compute direct parameters via CLS token: */
+17  ŷ_direct ← σ(W_direct2 · GELU(W_direct · h_cls + b_direct) + b_direct2)
+
+/* Compute squeezing angles via paired FDS/FIS features: */
+18  for i ∈ [5]:
+19      h_combined ← [H_asd[i, :]; H_asd[i+5, :]]             /* Concatenate FDS_i and FIS_i */
+20      [ŝ_i, ĉ_i] ← tanh(W_angle2 · GELU(W_angle_head · h_combined + b_angle_head) + b_angle2)
+21  end
+22  ŷ_angles ← [ŝ_0, ĉ_0, ŝ_1, ĉ_1, ..., ŝ_4, ĉ_4]          /* Interleaved sin/cos */
+
+23  return ŷ_direct, ŷ_angles
+```
+
+**Where:**
+- $\sigma(\cdot)$ denotes the sigmoid activation function
+- $\text{GELU}(\cdot)$ denotes the Gaussian Error Linear Unit activation
+- $\tanh(\cdot)$ denotes the hyperbolic tangent activation
+- $\text{MHAttention}(\cdot)$ denotes multi-head self-attention (see Algorithm 3)
+- $\text{LayerNorm}(\cdot | \gamma, \beta)$ denotes layer normalization with scale $\gamma$ and shift $\beta$
+
+---
+
+## Algorithm 2: Training Procedure with Variance Regularization
+
+**Algorithm 2:** $\boldsymbol{\theta}^* \leftarrow \text{Train}(\mathcal{D} | \boldsymbol{\theta}_0, \eta, \lambda_{var})$
+
+```
+/* Training procedure for Multi-ASD Transformer with variance regularization */
+
+Input: 𝒟 = {(A^(n), y_direct^(n), θ_raw^(n))}_{n=1}^N, training dataset of ASD-parameter pairs
+Output: θ*, optimized model parameters
+
+Hyperparameters: 
+    N_epochs ∈ ℕ, number of training epochs,
+    B ∈ ℕ, batch size,
+    η ∈ ℝ+, initial learning rate,
+    λ_var ∈ ℝ+, variance regularization weight (default 0.05),
+    σ_min ∈ ℝ+, minimum target variance (default 0.02),
+    ℐ_collapse = {5, 6, 7}, indices of mode-collapse prone parameters.
+
+/* Precompute target encodings: */
+ 1  for n ∈ [N]:
+ 2      y_direct_norm^(n) ← normalize(y_direct^(n))           /* Min-max to [0, 1] */
+ 3      for i ∈ [5]:
+ 4          s_i^(n) ← sin(2 · θ_raw^(n)[i])                   /* π-periodic encoding */
+ 5          c_i^(n) ← cos(2 · θ_raw^(n)[i])
+ 6      end
+ 7      y_angles^(n) ← [s_0^(n), c_0^(n), ..., s_4^(n), c_4^(n)]
+ 8  end
+
+/* Initialize optimizer and scheduler: */
+ 9  optimizer ← AdamW(θ, lr=η, weight_decay=0.01)
+10  scheduler ← CosineAnnealingLR(optimizer, T_max=N_epochs)
+
+/* Training loop: */
+11  for epoch = 1, 2, ..., N_epochs do
+12      for each minibatch ℬ ⊂ 𝒟 of size B do
+13          /* Forward pass: */
+14          {ŷ_direct^(n), ŷ_angles^(n)}_{n∈ℬ} ← MultiASDEncoder({A^(n)}_{n∈ℬ} | θ)
+          
+15          /* Compute MSE losses: */
+16          ℒ_direct ← (1/B) Σ_{n∈ℬ} ||ŷ_direct^(n) - y_direct_norm^(n)||_2^2
+17          ℒ_angles ← (1/B) Σ_{n∈ℬ} ||ŷ_angles^(n) - y_angles^(n)||_2^2
+          
+18          /* Compute variance regularization for mode-collapse parameters: */
+19          for j ∈ ℐ_collapse:
+20              σ_j^2 ← Var({ŷ_direct^(n)[j]}_{n∈ℬ})
+21              penalty_j ← max(0, σ_min - σ_j^2)^2
+22          end
+23          ℒ_var ← (1/|ℐ_collapse|) Σ_{j∈ℐ_collapse} penalty_j
+          
+24          /* Total loss: */
+25          ℒ ← ℒ_direct + ℒ_angles + λ_var · ℒ_var
+          
+26          /* Backward pass and update: */
+27          θ ← θ - optimizer_step(∇_θ ℒ, clip_norm=1.0)
+28      end
+29      scheduler.step()
+30  end
+
+31  return θ* ← θ
+```
+
+**Where:**
+- $\text{Var}(\cdot)$ denotes sample variance over the batch dimension
+- $\text{normalize}(\cdot)$ denotes min-max normalization to $[0, 1]$
+- The variance regularization (lines 18-23) prevents mode collapse on degenerate parameters
+
+---
+
+## Algorithm 3: Multi-Head Self-Attention
+
+**Algorithm 3:** $\mathbf{Y} \leftarrow \text{MHAttention}(\mathbf{X} | \mathcal{W})$
+
+```
+/* Multi-head self-attention mechanism */
+
+Input: X ∈ ℝ^(L × d_model), sequence of L token embeddings
+Output: Y ∈ ℝ^(L × d_model), attended representations
+
+Parameters: 𝒲 = {W_Q^h, W_K^h, W_V^h ∈ ℝ^(d_model × d_k), W_O ∈ ℝ^(H·d_k × d_model)} for h ∈ [H]
+
+ 1  for h = 1, 2, ..., H do                                   /* H attention heads */
+ 2      Q^h ← X · W_Q^h                                       /* Queries: ℝ^(L × d_k) */
+ 3      K^h ← X · W_K^h                                       /* Keys: ℝ^(L × d_k) */
+ 4      V^h ← X · W_V^h                                       /* Values: ℝ^(L × d_k) */
+ 5      A^h ← softmax((Q^h · (K^h)^T) / √d_k)                 /* Attention weights */
+ 6      head_h ← A^h · V^h
+ 7  end
+ 8  Y ← [head_1; head_2; ...; head_H] · W_O                   /* Concatenate and project */
+
+ 9  return Y
+```
+
+---
+
+## Algorithm 4: Angle Decoding (Inference)
+
+**Algorithm 4:** $\hat{\boldsymbol{\theta}} \leftarrow \text{DecodeAngles}(\hat{\mathbf{y}}_{angles})$
+
+```
+/* Decode sin/cos predictions back to angles in [0, π] */
+
+Input: ŷ_angles ∈ ℝ^10, predicted [sin(2θ_0), cos(2θ_0), ..., sin(2θ_4), cos(2θ_4)]
+Output: θ̂ ∈ ℝ^5, decoded squeezing angles in [0, π]
+
+ 1  for i = 0, 1, ..., 4 do
+ 2      ŝ_i ← ŷ_angles[2i]                                    /* Predicted sin(2θ_i) */
+ 3      ĉ_i ← ŷ_angles[2i + 1]                                /* Predicted cos(2θ_i) */
+ 4      φ_i ← atan2(ŝ_i, ĉ_i)                                 /* Recover 2θ ∈ [-π, π] */
+ 5      θ̂_i ← (φ_i / 2) mod π                                 /* Map to [0, π] */
+ 6  end
+
+ 7  return θ̂ = [θ̂_0, θ̂_1, θ̂_2, θ̂_3, θ̂_4]
+```
+
+**Note:** The $\text{mod } \pi$ operation ensures the output respects the π-periodicity of squeezing angles, where $\theta$ and $\theta + \pi$ produce physically identical quantum noise spectra.
+
+---
+
+## Algorithm 5: Circular Correlation Metric
+
+**Algorithm 5:** $r_{circ} \leftarrow \text{CircularCorrelation}(\hat{\boldsymbol{\theta}}, \boldsymbol{\theta})$
+
+```
+/* Compute circular correlation for π-periodic angles */
+
+Input: θ̂ ∈ ℝ^N, predicted angles; θ ∈ ℝ^N, target angles
+Output: r_circ ∈ [-1, 1], circular correlation coefficient
+
+ 1  r_circ ← (1/N) Σ_{i=1}^N cos(2 · (θ̂_i - θ_i))
+
+ 2  return r_circ
+```
+
+**Interpretation:**
+- $r_{circ} = 1$: Perfect prediction ($\hat{\theta} = \theta$ or $\hat{\theta} = \theta + \pi$)
+- $r_{circ} = 0$: Random predictions
+- $r_{circ} = -1$: Maximally wrong (off by $\pi/2$)
+
+---
+
+## Summary of Notation
+
+| Symbol | Description | Dimensions |
+|--------|-------------|------------|
+| $\mathbf{A}$ | Input ASD matrix | $10 \times 1024$ |
+| $d_{model}$ | Model embedding dimension | 256 |
+| $N_{heads}$ | Number of attention heads | 16 |
+| $N_{layers}$ | Number of transformer layers | 7 |
+| $d_{ff}$ | Feed-forward hidden dimension | 1024 |
+| $\mathbf{Z}$ | Sequence of token embeddings | $(11) \times d_{model}$ |
+| $\hat{\mathbf{y}}_{direct}$ | Predicted direct parameters | 10 |
+| $\hat{\mathbf{y}}_{angles}$ | Predicted angle sin/cos values | 10 |
+| $\mathcal{I}_{collapse}$ | Mode-collapse parameter indices | $\{5, 6, 7\}$ |
+| $\lambda_{var}$ | Variance regularization weight | 0.05 |
+
+---
+
+## Parameter Definitions
+
+**Direct Parameters** (indices 0-9):
+| Index | Symbol | Description | Units |
+|-------|--------|-------------|-------|
+| 0 | $f_{FC}$ | Filter cavity detuning | Hz |
+| 1 | $r_{inj}$ | Injected squeezing level | dB |
+| 2 | $\eta_{inj}$ | Injection loss | fraction |
+| 3 | $P_{arm}$ | Arm cavity power | W |
+| 4 | $\phi_{SEC}$ | SEC detuning | rad |
+| 5 | $\Upsilon_{IFO}$ | IFO-OMC mode mismatch | fraction |
+| 6 | $\Upsilon_{SQZ}$ | SQZ-OMC mode mismatch | fraction |
+| 7 | $\Upsilon_{FC}$ | Filter cavity mismatch | fraction |
+| 8 | $\zeta$ | Local oscillator angle | rad |
+| 9 | $\phi_{noise}$ | Phase noise RMS | rad |
+
+**Squeezing Angles** (5 values):
+| Index | Symbol | Description | Range |
+|-------|--------|-------------|-------|
+| 0-4 | $\theta_0, ..., \theta_4$ | Squeezing angle per config | $[0, \pi]$ |
+
 ## 3. Implementation & Demo
 
 ### 3.1 Installation
