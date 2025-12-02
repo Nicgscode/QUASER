@@ -48,7 +48,7 @@ The speed and consistent output is another key innovation, with hand fitting two
 │   10 configs    │     │   8 layers      │     │   + 5 angles    │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
      ~1 ms                  ~10 ms                   ~1 ms
-                    Total: ~12 ms vs ~2 hours (MCMC)
+                    Total: ~12 ms vs ~days (hand-fitting)
 ```
 
 ---
@@ -297,19 +297,14 @@ The model's predictions on the evaluation data set with no artificical noise add
 The model's predictions on the evaluation data set with artificical noise added (20k samples)
 
 #### Model's comparison to real data
-
+![realdata](Images/Comparison_to_Realdata.png)
 
 ### 4.2 Intended Uses
 
 **Primary Use Cases:**
 - Real-time quantum noise monitoring during LIGO commissioning
 - Rapid parameter estimation for detector optimization
-- Initial parameter guesses for MCMC refinement
-
-**Out of Scope:**
-- Final parameter values for publications (use MCMC with uncertainty)
-- Phase parameter estimation (fundamentally unlearnable from PSD)
-- Operation on detectors with significantly different configurations
+- Initial parameter guesses for hand-fitting refinement
 
 ### 4.3 Limitations & Known Issues
 
@@ -317,7 +312,7 @@ The model's predictions on the evaluation data set with artificical noise added 
 
 2. **Phase Parameters Unlearnable**: Mismatch phase parameters cannot be recovered from PSD measurements (fundamental physics limitation)
 
-3. **Domain Shift**: Model trained on simulated data; real data performance depends on simulation fidelity
+3. **Domain Shift**: Model trained on simulated data; real data performance depends on simulation fidelity. 
 
 ### 4.4 Ethical Considerations & Bias
 
