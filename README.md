@@ -527,7 +527,7 @@ If you use this work, please cite:
 @misc{ligo-quantum-transformer,
   author = {Howard, Nic},
   title = {LIGO Quantum Noise Parameter Estimation with Transformers},
-  year = {2024},
+  year = {2025},
   publisher = {GitHub},
   url = {https://github.com/[username]/ligo-quantum-transformer}
 }
@@ -537,9 +537,9 @@ If you use this work, please cite:
 
 ## Contact
 
-- **Author**: Nic Howard
+- **Author**: Nicholas-Tyler Howard (Nic)
 - **Affiliation**: LIGO Laboratory / Caltech
-- **Email**: [email]
+- **Email**: nicholastyler.howard@ligo.org
 
 ---
 
