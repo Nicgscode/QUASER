@@ -1,12 +1,6 @@
 """
 train_v9.py - Training script for Multi-ASD Transformer V9
 
-Changes from v8:
-    - Removed sin/cos phase training (phases unlearnable from PSD)
-    - Added variance regularization for mode-collapse prone parameters
-    - Uses sin(2θ)/cos(2θ) encoding for squeezing angles (π-periodic)
-    - Outputs: 10 direct params + 10 angle sin/cos values
-
 Sin/Cos Encoding for π-Periodic Angles:
     Squeezing angles have π-periodicity (θ and θ+π produce identical ASDs).
     Using sin(2θ)/cos(2θ) encoding maps θ=0 and θ=π to the same point,
@@ -75,8 +69,8 @@ def train_v9(file_path, num_samples=200001, num_epochs=100,
         num_layers: transformer layers
         d_ff: feedforward dimension
         dropout: dropout rate
-        var_reg_weight: weight for variance regularization loss (default 0.05)
-        var_reg_min: minimum target variance for regularization (default 0.02)
+        var_reg_weight: weight for variance regularization loss (default 0.8)
+        var_reg_min: minimum target variance for regularization (default 0.03)
     """
     
     device = torch.device(device if torch.cuda.is_available() else 'cpu')
@@ -426,29 +420,28 @@ def predict_physical_params(model, data, asd_input, device='cuda'):
         'phase_noise': direct_phys[9],
         'sqz_angles': angles_phys,
     }
-
-
+    
 # =============================================================================
 # MAIN EXECUTION
 # =============================================================================
 
 if __name__ == "__main__":
     
-    FILE_PATH = r'C:\Users\User\repos\Transformer\Sample_Generation\Samples_TrainV9_noisy.hdf5'
+    FILE_PATH = r'Generate_Data/Samples_Train.hdf5'
     
     model, data, history = train_v9(
         FILE_PATH,
-        num_samples=150000,
+        num_samples=200001,
         num_epochs=101,
         batch_size=256,
         lr=3e-4,
         d_model=256,
         num_heads=16,
-        num_layers=7,
+        num_layers=8,
         d_ff=1024,
         dropout=0.22,
-        var_reg_weight=0.05,  # Variance regularization weight
-        var_reg_min=0.02      # Minimum target variance
+        var_reg_weight=0.8,  # Variance regularization weight
+        var_reg_min=0.03      # Minimum target variance
     )
     
     # Plot training history
