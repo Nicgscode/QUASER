@@ -293,8 +293,7 @@ Example output (LIGO alog format):
 ![Model Performance](Images/model_ouput_clean.png)
 The model's predictions on the evaluation data set with no artificical noise added (20k samples)
 
-
-
+![Model's performance with noise](model_predictions_val.png)
 The model's predictions on the evaluation data set with artificical noise added (20k samples)
 
 #### Model's comparison to real data
