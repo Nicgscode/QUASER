@@ -17,6 +17,7 @@ A deep learning approach to real-time quantum noise characterization for gravita
 5. [Model & Data Cards](#5-model--data-cards)
 6. [Critical Analysis](#6-critical-analysis)
 7. [References & Resources](#7-references--resources)
+8. [Formal Algorithms](#8-formal-algorithms)
 
 ---
 
@@ -260,34 +261,10 @@ Example output (LIGO alog format):
 +----------------------------------------+
 ```
 
-### 3.6 Code Demonstration
-
-```python
-import torch
-from model.model import MultiASDEncoderV9, MultiASDDataLoaderV9
-
-# Load model
-model = MultiASDEncoderV9(
-    d_model=256, num_heads=16, num_layers=7,
-    d_ff=1024, dropout=0.22
-)
-model.load_state_dict(torch.load('best_model_v9.pt'))
-model.eval()
-
-# Example inference
-asd_input = torch.randn(1, 10, 1024)  # (batch, 10 ASDs, 1024 freq bins)
-with torch.no_grad():
-    direct_params, angles_sincos = model(asd_input)
-    
-print(f"Direct parameters shape: {direct_params.shape}")  # (1, 10)
-print(f"Angle sin/cos shape: {angles_sincos.shape}")      # (1, 10)
-```
----
-
 ## 4. Assessment & Evaluation
 
 ### 4.1 Model Performance
-
+![Model Performance](Images/model_ouput_clean.png)
 
 ### 4.3 Intended Uses
 
@@ -509,7 +486,7 @@ If you use this work, please cite:
 - **Email**: nicholastyler.howard@ligo.org
 
 
-### Formal Algorithms
+## 8. Formal Algorithms
 ---
 ## Algorithm 1: Multi-ASD Transformer Forward Pass
 
