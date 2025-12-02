@@ -175,7 +175,7 @@ def variance_regularization_loss(predictions, indices, min_var=0.02):
 
 ```bash
 # Clone repository
-git clone https://github.com/[username]/ligo-quantum-transformer.git
+git clone https://github.com/Nicgscode/ligo-quantum-transformer.git
 cd ligo-quantum-transformer
 
 # Create environment
@@ -503,7 +503,7 @@ Despite the 17-order-of-magnitude parameter range, the transformer learns meanin
 
 ```bash
 # 1. Clone and setup
-git clone https://github.com/[username]/ligo-quantum-transformer.git
+git clone https://github.com/Nicgscode/ligo-quantum-transformer.git
 cd ligo-quantum-transformer
 pip install -r requirements.txt
 
@@ -529,7 +529,7 @@ If you use this work, please cite:
   title = {LIGO Quantum Noise Parameter Estimation with Transformers},
   year = {2025},
   publisher = {GitHub},
-  url = {https://github.com/[username]/ligo-quantum-transformer}
+  url = {https://github.com/Nicgscode/ligo-quantum-transformer}
 }
 ```
 
