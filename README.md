@@ -35,7 +35,9 @@ We developed a **transformer-based neural network** that predicts quantum noise 
 
 ### Key Innovation
 
-This work reveals a fundamental physics insight: **certain parameters are unlearnable from power spectral density measurements alone**. Specifically, mode mismatch phase parameters cannot be recovered because phase information is destroyed when computing PSD = |FFT(signal)|². This finding may have implications for LIGO commissioning procedures.
+This work reveals a fundamental physics insight: certain parameters are unlearnable from power spectral density measurements alone. Specifically, mode mismatch phase parameters cannot be recovered because the scattered field amplitude scales as √Υ (small for typical 2-5% mismatches), making the phase contribution negligible compared to order-unity effects from other parameters. This is consistent with the parametric study in Section 6.3.1 of [Jia 2024], which shows that varying mismatch phase parameters (e.g., MM_IFO_OMCphi, MM ARM SRCphi) from -90° to +90° produces minimal change in the sensing function (see Figure 6-3 [Jia 2024]).
+
+The speed and consistent output is another key innovation, with hand fitting two individuals may conclude on two valid parameter values. Having a model decide the value lowers the ambiguity for quantum parameters. 
 
 ### Pipeline Overview
 
@@ -43,7 +45,7 @@ This work reveals a fundamental physics insight: **certain parameters are unlear
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │   Input: ASD    │     │   Transformer   │     │    Output:      │
 │   (10 × 1024)   │ ──► │    Encoder      │ ──► │  15 Parameters  │
-│   10 configs    │     │   7 layers      │     │   + 5 angles    │
+│   10 configs    │     │   8 layers      │     │   + 5 angles    │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
      ~1 ms                  ~10 ms                   ~1 ms
                     Total: ~12 ms vs ~2 hours (MCMC)
